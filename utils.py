@@ -22,7 +22,7 @@ def extractData(file_path: str,images_path:str=None):
     elif('label' in data[0].keys()):
         label_key= 'label'
         possible_labels = OrderedSet(entry['label'] for entry in data)
-        main_label = possible_labels[0]
+        main_label = "propagandistic"
         
     else:
         label_key=None
