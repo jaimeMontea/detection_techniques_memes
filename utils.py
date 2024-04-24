@@ -6,8 +6,6 @@ import json
 from ordered_set import OrderedSet
 from PIL import Image
 
-
-
 def extractData(file_path: str,images_path:str=None):
     
     images = {}
@@ -92,3 +90,20 @@ def augment_text_random_deletion():
 
 def augment_text_back_translation():
     return
+
+def to_json(df, file_name):
+    """
+        Saves result in a valid json format.
+    """
+    data = []
+
+    for _, row in df.iterrows():
+        entry = {
+            "id": str(row['id']),
+            "text": str(row['text']),
+            "labels": row['labels']
+        }
+        data.append(entry)
+
+    with open(file_name, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
