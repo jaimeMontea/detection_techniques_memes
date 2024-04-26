@@ -165,7 +165,7 @@ def _read_gold_and_pred(pred_fpath, gold_fpath):
   return pred_labels, gold_labels
 
 def evaluate_h(pred_fpath, gold_fpath):
-    pred_labels, gold_labels = _read_gold_and_pred(pred_file, gold_file)
+    pred_labels, gold_labels = _read_gold_and_pred(pred_fpath, gold_fpath)
   
     gold = []
     pred = []
