@@ -25,21 +25,19 @@ deberta_model.to(device)
 roberta_model.to(device)
 
 
-# 初始化tokenizer
 deberta_tokenizer = DebertaTokenizer.from_pretrained('microsoft/deberta-base')
 roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 
-# 定义模型评估函数
+# Prediction function
 def evaluate_sentence(sentence):
-    # 处理输入句子
+    # tokenize input sentence
     encoded_sentence_deberta = deberta_tokenizer(sentence, truncation=True, padding=True, return_tensors='pt')
     encoded_sentence_roberta = roberta_tokenizer(sentence, truncation=True, padding=True, return_tensors='pt')
 
-    # 推断模式
+    # evaluate
     deberta_model.eval()
     roberta_model.eval()
 
-    # 在设备上运行
     encoded_sentence_deberta = {key: val.to(device) for key, val in encoded_sentence_deberta.items()}
     encoded_sentence_roberta = {key: val.to(device) for key, val in encoded_sentence_roberta.items()}
 
@@ -64,35 +62,32 @@ def evaluate_sentence(sentence):
  'Thought-terminating cliché',
  'Whataboutism']
     
-    # 获取预测结果
+
     with torch.no_grad():
         deberta_output = torch.sigmoid(deberta_model(**encoded_sentence_deberta).logits)
         roberta_output = torch.sigmoid(roberta_model(**encoded_sentence_roberta).logits)
         
 
 
-    # 组合预测结果
+    # Combine prediction from 2 models/ select max of the 2 models
     # combined_output = torch.max(deberta_output, roberta_output)
     combined_output = deberta_output + roberta_output
 
-    # 返回预测结果
-    threshold = 0.5  # 阈值
+    threshold = 0.5  
     labels = (combined_output > threshold).int().cpu().numpy().tolist()[0]
     output_labels = [label for label, pred in zip(possible_labels, labels) if pred == 1]
     return output_labels 
 
-# Streamlit 应用程序
+# Streamlit 
 def main():
     st.title("Demo: Subtask1")
 
-    # 添加输入框功能
     sentence = st.text_input("Please input a sentence:", "")
 
-    # 显示预测结果
     if sentence:
         labels = evaluate_sentence(sentence)
         st.write("Predicted labels:", labels)
 
-# 运行应用程序
+
 if __name__ == "__main__":
     main()
